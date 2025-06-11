@@ -14,6 +14,17 @@ def emotion_detector(text_to_analyse):
 
     response = requests.post(url, headers=headers, json=input_json)
 
+    if response.status_code == 400:
+        # Return dictionary with None values for blank entries or bad request
+        return {
+            "anger": None,
+            "disgust": None,
+            "fear": None,
+            "joy": None,
+            "sadness": None,
+            "dominant_emotion": None
+        }
+
     if response.status_code != 200:
         raise Exception(f"API request failed with status {response.status_code}: {response.text}")
 
