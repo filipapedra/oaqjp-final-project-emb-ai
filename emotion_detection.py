@@ -14,7 +14,30 @@ def emotion_detector(text_to_analyse):
 
     response = requests.post(url, headers=headers, json=input_json)
 
-    if response.status_code == 200:
-        return response.json()
-    else:
+    if response.status_code != 200:
         raise Exception(f"API request failed with status {response.status_code}: {response.text}")
+
+    # Extract the emotions
+    response_json = response.json()
+    emotion_scores = response_json['emotionPredictions'][0]['emotion']
+
+    # Extract only the required emotions
+    anger = emotion_scores.get('anger', 0)
+    disgust = emotion_scores.get('disgust', 0)
+    fear = emotion_scores.get('fear', 0)
+    joy = emotion_scores.get('joy', 0)
+    sadness = emotion_scores.get('sadness', 0)
+
+    # Determine dominant emotion
+    emotion_dict = {
+        'anger': anger,
+        'disgust': disgust,
+        'fear': fear,
+        'joy': joy,
+        'sadness': sadness
+    }
+    dominant_emotion = max(emotion_dict, key=emotion_dict.get)
+
+    # Return result in required format
+    emotion_dict['dominant_emotion'] = dominant_emotion
+    return emotion_dict
